@@ -125,7 +125,7 @@ body {
     /* Thin gold top bar — the first micro-detail */
     border-top: 3px solid var(--gold);
 
-    /* Frosted-glass blur on scroll (optional) */
+    /* Frosted-glass blur on scroll*/
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
