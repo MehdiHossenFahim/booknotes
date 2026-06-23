@@ -2,14 +2,23 @@ import express from "express";
 import axios from "axios";
 import pg from "pg";
 import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import path from "path";
+
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
-// const port = 3000;
 
 // =========================
 // DATABASE SETUP
 // =========================
+if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL environment variable is not set");
+}
+
 const db = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: process.env.DATABASE_URL?.includes('neon.tech') 
@@ -17,14 +26,13 @@ const db = new pg.Pool({
         : false,
 });
 
-// db.connect();
-
 // =========================
 // MIDDLEWARE
 // =========================
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 // =========================
 // API CONSTANTS
@@ -41,7 +49,6 @@ app.get("/", async (req, res) => {
 
         let query = "SELECT * FROM books";
 
-        // sorting logic
         if (sort === "rating") {
             query += " ORDER BY rating DESC";
         } else if (sort === "title") {
@@ -56,6 +63,7 @@ app.get("/", async (req, res) => {
         res.render("index.ejs", { books });
     } catch (err) {
         console.log(err.message);
+        res.status(500).send("Something went wrong: " + err.message);
     }
 });
 
@@ -67,7 +75,6 @@ app.post("/add", async (req, res) => {
         const titleInput = req.body.searchBook;
         const rating = parseInt(req.body.rating);
 
-        // API call
         const response = await axios.get(api_url + titleInput.replace(/ /g, "+"));
         const data = response.data.docs[0];
 
@@ -77,9 +84,8 @@ app.post("/add", async (req, res) => {
 
         const title = data.title;
         const author = data.author_name[0];
-        const cover = cover_url + data.cover_i + "-L.jpg"; // FULL SIZE COVER
+        const cover = cover_url + data.cover_i + "-L.jpg";
 
-        // insert with duplicate protection
         await db.query(
             "INSERT INTO books (title, author, rating, cover_url) VALUES ($1, $2, $3, $4) ON CONFLICT (title) DO NOTHING",
             [title, author, rating, cover]
@@ -98,21 +104,12 @@ app.post("/add", async (req, res) => {
 app.post("/delete/:id", async (req, res) => {
     try {
         const id = req.params.id;
-
         await db.query("DELETE FROM books WHERE id = $1", [id]);
-
         res.redirect("/");
     } catch (err) {
         console.log(err.message);
+        res.status(500).send("Something went wrong: " + err.message);
     }
 });
 
-// =========================
-// START SERVER
-// =========================
-// app.listen(port, () => {
-//     console.log(`Server running on http://localhost:${port}`);
-// });
-
 export default app;
-
