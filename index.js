@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const port = 3000;
+// const port = 3000;
 
 // =========================
 // DATABASE SETUP
@@ -17,7 +17,7 @@ const db = new pg.Pool({
     },
 });
 
-db.connect();
+// db.connect();
 
 // =========================
 // MIDDLEWARE
