@@ -5,27 +5,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookNotes</title>
+    <link rel="stylesheet" href="styles/main.css" />
 </head>
 
 <body>
-    <h1>Book Notes</h1>
-    <p>Here is a collection a of books that I've read over the years and I've rated them according my liking.</p>
-    <form action="/add" method="post">
-        <label for="searchBook"> Book Title </label>
-        <input type="text" name="searchBook">
-        <button type="submit" class="submitButton">ADD</button>
-    </form>
-    <div class="books">
-        <img src="<%= cover %>" alt="<%= title %> cover" srcset="">
-        <h2>
-            <%= title %>
-        </h2>
 
-        <h3>
-            Author: <%= author%>
-        </h3>
-        <p> <b>Rating:</b> 9/10 </p>
-    </div>
+    <header>
+        <h1>📚 BookNotes</h1>
+        <p>A simple collection of books I've read and saved.</p>
+
+        <!-- Add Book Form -->
+        <form action="/add" method="post" class="form">
+            <input type="text" name="searchBook" placeholder="Enter book title..." required>
+            <button type="submit">Add Book</button>
+        </form>
+    </header>
+
+    <main class="container">
+
+        <!-- Book List -->
+        <% books.forEach(book=> { %>
+
+            <div class="book-card">
+
+                <img src="<%= book.cover %>" alt="Book cover">
+
+                <div class="book-info">
+                    <h2>
+                        <%= book.title %>
+                    </h2>
+                    <p class="author">Author: <%= book.author %>
+                    </p>
+                    <p class="rating">Rating: ⭐ 9/10</p>
+                </div>
+
+            </div>
+
+            <% }) %>
+
+                <!-- Empty state -->
+                <% if (books.length===0) { %>
+                    <p class="empty">No books added yet. Search above to start!</p>
+                    <% } %>
+
+    </main>
+
 </body>
 
 </html>
