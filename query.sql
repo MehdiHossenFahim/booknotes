@@ -1,4 +1,5 @@
--- Active: 1779109033519@@127.0.0.1@5432@booknotes
+-- Seed data for BookNotes app
+-- Run only in development
 CREATE DATABASE booknotes;
 
 CREATE Table books (
