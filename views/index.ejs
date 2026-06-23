@@ -16,7 +16,11 @@
 
         <!-- Add Book Form -->
         <form action="/add" method="post" class="form">
+
             <input type="text" name="searchBook" placeholder="Enter book title..." required>
+
+            <input type="number" name="rating" min="1" max="10" placeholder="Rating (1-10)" required>
+
             <button type="submit">Add Book</button>
         </form>
     </header>
@@ -36,7 +40,7 @@
                     </h2>
                     <p class="author">Author: <%= book.author %>
                     </p>
-                    <p class="rating">Rating: ⭐ 9/10</p>
+                    <p class="rating">Rating: ⭐ <%= book.rating %>/10</p>
                 </div>
 
             </div>

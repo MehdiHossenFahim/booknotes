@@ -24,6 +24,7 @@ app.get("/", async (req, res) => {
 app.post("/add", async (req, res) => {
     try {
         const query = req.body.searchBook;
+        const rating = req.body.rating;
 
         const response = await axios.get(api_url + query.replace(/ /g, "+"));
         const data = response.data.docs[0];
@@ -33,13 +34,13 @@ app.post("/add", async (req, res) => {
         const book = {
             title: data.title || "No title",
             author: data.author_name ? data.author_name[0] : "Unknown author",
+            rating: rating,
             cover: data.cover_i
-                ? cover_url + data.cover_i + cover_size
+                ? cover_url + data.cover_i + "-M.jpg"
                 : "https://via.placeholder.com/150x220?text=No+Cover"
         };
 
         books.push(book);
-
         res.redirect("/");
     } catch (error) {
         console.log(error.message);
