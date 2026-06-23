@@ -1,53 +1,115 @@
 import express from "express";
 import axios from "axios";
+import pg from "pg";
 
 const app = express();
 const port = 3000;
 
-// OpenLibrary API
-const api_url = "https://openlibrary.org/search.json?q=";
-const cover_url = "https://covers.openlibrary.org/b/id/";
-const cover_size = "-M.jpg";
-
-app.set("view engine", "ejs");
-
-app.use(express.static("public"));
-app.use(express.urlencoded({ extended: true }));
-
-// store books in memory (simple version for assignment)
-let books = [];
-
-app.get("/", async (req, res) => {
-    res.render("index.ejs", { books });
+// =========================
+// DATABASE SETUP
+// =========================
+const db = new pg.Client({
+    user: "postgres",
+    host: "localhost",
+    database: "booknotes",
+    password: "Sample@123",
+    port: 5432,
 });
 
+db.connect();
+
+// =========================
+// MIDDLEWARE
+// =========================
+app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+
+// =========================
+// API CONSTANTS
+// =========================
+const api_url = "https://openlibrary.org/search.json?q=";
+const cover_url = "https://covers.openlibrary.org/b/id/";
+
+// =========================
+// HOME + SORTING
+// =========================
+app.get("/", async (req, res) => {
+    try {
+        let sort = req.query.sort;
+
+        let query = "SELECT * FROM books";
+
+        // sorting logic
+        if (sort === "rating") {
+            query += " ORDER BY rating DESC";
+        } else if (sort === "title") {
+            query += " ORDER BY title ASC";
+        } else {
+            query += " ORDER BY id DESC";
+        }
+
+        const result = await db.query(query);
+        const books = result.rows;
+
+        res.render("index.ejs", { books });
+    } catch (err) {
+        console.log(err.message);
+    }
+});
+
+// =========================
+// ADD BOOK
+// =========================
 app.post("/add", async (req, res) => {
     try {
-        const query = req.body.searchBook;
-        const rating = req.body.rating;
+        const titleInput = req.body.searchBook;
+        const rating = parseInt(req.body.rating);
 
-        const response = await axios.get(api_url + query.replace(/ /g, "+"));
+        // API call
+        const response = await axios.get(api_url + titleInput.replace(/ /g, "+"));
         const data = response.data.docs[0];
 
-        if (!data) return res.redirect("/");
+        if (!data || !data.cover_i || !data.title || !data.author_name) {
+            return res.redirect("/");
+        }
 
-        const book = {
-            title: data.title || "No title",
-            author: data.author_name ? data.author_name[0] : "Unknown author",
-            rating: rating,
-            cover: data.cover_i
-                ? cover_url + data.cover_i + "-M.jpg"
-                : "https://via.placeholder.com/150x220?text=No+Cover"
-        };
+        const title = data.title;
+        const author = data.author_name[0];
+        const cover = cover_url + data.cover_i + "-L.jpg"; // FULL SIZE COVER
 
-        books.push(book);
+        // insert with duplicate protection
+        await db.query(
+            "INSERT INTO books (title, author, rating, cover_url) VALUES ($1, $2, $3, $4) ON CONFLICT (title) DO NOTHING",
+            [title, author, rating, cover]
+        );
+
         res.redirect("/");
-    } catch (error) {
-        console.log(error.message);
+    } catch (err) {
+        console.log(err.message);
         res.redirect("/");
     }
 });
 
+// =========================
+// DELETE BOOK
+// =========================
+app.post("/delete/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        await db.query("DELETE FROM books WHERE id = $1", [id]);
+
+        res.redirect("/");
+    } catch (err) {
+        console.log(err.message);
+    }
+});
+
+// =========================
+// START SERVER
+// =========================
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
+
