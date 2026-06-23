@@ -1,68 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!-- ============================================================
+     BookNotes — Personal Reading Library
+     Author : Mehedi Hossen Fahim
+     Stack  : EJS · Express · PostgreSQL · Open Library API
+     ============================================================ -->
+
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="BookNotes — your personal reading library and rating tracker." />
     <title>BookNotes</title>
-    <link rel="stylesheet" href="/styles/main.css">
+
+    <!-- ── Favicon (inline SVG as data-URI — no extra file needed) ── -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230F1117'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='38' font-family='serif'%3E📚%3C/text%3E%3C/svg%3E" />
+
+    <!-- ── Google Fonts ── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="/styles/main.css" />
 </head>
 
 <body>
 
-    <header>
-        <h1>📚 BookNotes</h1>
+    <!-- ════════════════════════════════════════════════
+       SITE HEADER — brand, add-book form, sort links
+  ════════════════════════════════════════════════ -->
+    <header class="site-header">
+        <div class="header-inner">
 
-        <!-- ADD BOOK FORM -->
-        <form action="/add" method="post" class="form">
+            <!-- Brand -->
+            <div class="brand">
+                <span class="brand-icon" aria-hidden="true">📚</span>
+                <span class="brand-name">BookNotes</span>
+                <span class="brand-tagline">your reading shelf, curated</span>
+            </div>
 
-            <input type="text" name="searchBook" placeholder="Book title" required>
+            <!-- ── Add Book Form ── -->
+            <form action="/add" method="post" class="add-form" aria-label="Add a new book">
 
-            <input type="number" name="rating" placeholder="Rating (1-10)" min="1" max="10" required>
+                <div class="form-group">
+                    <label for="searchBook" class="sr-only">Book title</label>
+                    <input id="searchBook" type="text" name="searchBook" placeholder="Book title…" autocomplete="off"
+                        required />
+                </div>
 
-            <button type="submit">Add</button>
-        </form>
+                <div class="form-group">
+                    <label for="rating" class="sr-only">Rating 1–10</label>
+                    <input id="rating" type="number" name="rating" placeholder="Rating (1–10)" min="1" max="10"
+                        required />
+                </div>
 
-        <!-- SORTING -->
-        <div class="sort">
-            <a href="/?sort=rating">Top Rated</a>
-            <a href="/?sort=title">Title</a>
-            <a href="/">Newest</a>
+                <button type="submit" class="btn-add">
+                    <span class="btn-text">Add Book</span>
+                    <span class="btn-icon" aria-hidden="true">+</span>
+                </button>
+            </form>
+
+            <!-- ── Sort Navigation ── -->
+            <nav class="sort-nav" aria-label="Sort books">
+                <a href="/?sort=rating" class="sort-link">⭐ Top Rated</a>
+                <span class="sort-divider" aria-hidden="true">|</span>
+                <a href="/?sort=title" class="sort-link">A–Z Title</a>
+                <span class="sort-divider" aria-hidden="true">|</span>
+                <a href="/" class="sort-link">🕐 Newest</a>
+            </nav>
+
         </div>
     </header>
 
-    <main class="container">
+    <!-- ════════════════════════════════════════════════
+       MAIN — book grid
+  ════════════════════════════════════════════════ -->
+    <main class="shelf-grid" id="main-content">
 
-        <% books.forEach(book=> { %>
+        <!-- ── Populated shelf ── -->
+        <% if (books.length> 0) { %>
 
-            <div class="book-card">
+            <% books.forEach((book, index)=> { %>
+                <article class="book-card" style="animation-delay: <%= index * 60 %>ms"
+                    aria-label="<%= book.title %> by <%= book.author %>">
 
-                <!-- FULL COVER (no cropping) -->
-                <img src="<%= book.cover_url %>" alt="cover">
+                    <!-- Cover -->
+                    <div class="card-cover">
+                        <img src="<%= book.cover_url %>" alt="Cover of <%= book.title %>" loading="lazy" />
+                        <!-- Hover rating badge -->
+                        <div class="cover-overlay">
+                            <span class="rating-badge">⭐ <%= book.rating %><span class="rating-denom">/10</span></span>
+                        </div>
+                    </div>
 
-                <div class="book-info">
+                    <!-- Info -->
+                    <div class="card-body">
+                        <h2 class="card-title">
+                            <%= book.title %>
+                        </h2>
+                        <p class="card-author">
+                            <%= book.author %>
+                        </p>
 
-                    <h2>
-                        <%= book.title %>
-                    </h2>
-                    <p>Author: <%= book.author %>
-                    </p>
-                    <p>⭐ <%= book.rating %>/10</p>
+                        <!-- Rating bar -->
+                        <div class="rating-bar" aria-label="Rating <%= book.rating %> out of 10">
+                            <div class="rating-fill" style="width: <%= book.rating * 10 %>%"></div>
+                        </div>
 
-                    <!-- DELETE -->
-                    <form action="/delete/<%= book.id %>" method="post">
-                        <button class="delete-btn">Delete</button>
-                    </form>
+                        <!-- Shelf divider — the signature detail -->
+                        <div class="shelf-line" aria-hidden="true"></div>
 
-                </div>
-            </div>
+                        <!-- Actions -->
+                        <div class="card-actions">
+                            <form action="/delete/<%= book.id %>" method="post">
+                                <button type="submit" class="btn-delete"
+                                    aria-label="Remove <%= book.title %> from shelf"
+                                    onclick="return confirm('Remove \'<%= book.title %>\' from your shelf?')">
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
+                    </div>
 
-            <% }) %>
+                </article>
+                <% }) %>
 
-                <% if (books.length===0) { %>
-                    <p>No books added yet.</p>
-                    <% } %>
+                    <% } else { %>
+
+                        <!-- ── Empty state ── -->
+                        <div class="empty-state">
+                            <span class="empty-icon" aria-hidden="true">📖</span>
+                            <h2 class="empty-heading">Your shelf is empty</h2>
+                            <p class="empty-sub">Search for a book above and give it a rating to get started.</p>
+                        </div>
+
+                        <% } %>
 
     </main>
+
+    <!-- ════════════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════════════ -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+
+            <span class="footer-brand">📚 BookNotes</span>
+
+            <!-- Year injected by JS so it stays evergreen -->
+            <p class="footer-copy">
+                &copy; <span id="footer-year"></span> Mehedi Hossen Fahim. All rights reserved.
+            </p>
+
+            <p class="footer-stack">
+                Built with Express · EJS · PostgreSQL · Open Library API
+            </p>
+
+        </div>
+    </footer>
+
+    <!-- ════════════════════════════════════════════════
+       SCRIPTS
+  ════════════════════════════════════════════════ -->
+    <script>
+        /* ── Footer year (always current) ── */
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+        /* ── Staggered card entrance (IntersectionObserver for perf) ── */
+        const cards = document.querySelectorAll('.book-card');
+
+        if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('card-visible');
+                            io.unobserve(entry.target);
+                        }
+                    });
+                },
+                { threshold: 0.08 }
+            );
+            cards.forEach((card) => io.observe(card));
+        } else {
+            /* Fallback for older browsers — show all cards immediately */
+            cards.forEach((card) => card.classList.add('card-visible'));
+        }
+
+        /* ── Highlight active sort link ── */
+        const params = new URLSearchParams(window.location.search);
+        const sortVal = params.get('sort') || 'newest';
+        const sortMap = { rating: 0, title: 1, newest: 2 };
+        const sortLinks = document.querySelectorAll('.sort-link');
+        if (sortLinks[sortMap[sortVal]]) {
+            sortLinks[sortMap[sortVal]].classList.add('sort-active');
+        }
+    </script>
 
 </body>
 

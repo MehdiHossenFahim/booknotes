@@ -1,106 +1,642 @@
-/* =========================
-   GLOBAL
-========================= */
-body {
+/* ============================================================
+   BookNotes — main.css
+   Author  : Mehedi Hossen Fahim
+   Design  : Minimal dark editorial with antique-gold accents
+   ============================================================ */
+
+
+/* ══════════════════════════════════════════════════════════════
+   1. DESIGN TOKENS
+══════════════════════════════════════════════════════════════ */
+:root {
+    /* Palette */
+    --ink: #0F1117;
+    /* page background        */
+    --ink-mid: #1A1D27;
+    /* card / raised surface  */
+    --ink-border: #252836;
+    /* subtle borders         */
+    --gold: #C9A84C;
+    /* primary accent         */
+    --gold-dim: #9A7B32;
+    /* hover / pressed gold   */
+    --ivory: #F7F3EE;
+    /* headline text          */
+    --ivory-dim: #B8AFA6;
+    /* secondary text         */
+    --sage: #6B7F6E;
+    /* tertiary / helper text */
+    --blush: #E8DDD0;
+    /* empty-state text       */
+    --danger: #C0392B;
+    /* delete / error         */
+    --danger-dim: #922B21;
+
+    /* Typography */
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+
+    /* Spacing scale (4px base) */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 20px;
+    --sp-6: 24px;
+    --sp-8: 32px;
+    --sp-10: 40px;
+    --sp-12: 48px;
+    --sp-16: 64px;
+
+    /* Radii */
+    --r-sm: 6px;
+    --r-md: 10px;
+    --r-lg: 16px;
+
+    /* Shadows */
+    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.45);
+    --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.65);
+
+    /* Transitions */
+    --t-fast: 150ms ease;
+    --t-normal: 250ms ease;
+    --t-slow: 400ms cubic-bezier(.25, .46, .45, .94);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   2. RESET & BASE
+══════════════════════════════════════════════════════════════ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
+    padding: 0;
 }
 
-/* =========================
-   HEADER
-========================= */
-header {
-    text-align: center;
-    padding: 20px;
-    background: #111827;
-    color: white;
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
 }
 
-/* =========================
-   FORM
-========================= */
-.form {
-    margin-top: 15px;
-}
-
-.form input {
-    padding: 8px;
-    margin: 5px;
-    border-radius: 5px;
-    border: none;
-}
-
-.form button {
-    padding: 8px 12px;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 5px;
-}
-
-/* =========================
-   SORT LINKS
-========================= */
-.sort {
-    margin-top: 10px;
-}
-
-.sort a {
-    color: white;
-    margin: 0 10px;
-    text-decoration: none;
-}
-
-/* =========================
-   GRID LAYOUT
-========================= */
-.container {
-    width: 90%;
-    margin: 30px auto;
-
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-}
-
-/* =========================
-   BOOK CARD
-========================= */
-.book-card {
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-
+body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    background-color: var(--ink);
+    color: var(--ivory-dim);
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
 }
 
-/* FULL IMAGE (NO CROPPING) */
-.book-card img {
-    width: 100%;
-    height: auto;
-    /* IMPORTANT FIX */
-    object-fit: contain;
-    /* prevents cropping */
-    background: #eee;
+/* Screen-reader only utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
 }
 
-.book-info {
-    padding: 10px;
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
-.book-info h2 {
-    font-size: 1.1rem;
+
+/* ══════════════════════════════════════════════════════════════
+   3. SITE HEADER
+══════════════════════════════════════════════════════════════ */
+.site-header {
+    background-color: var(--ink);
+    border-bottom: 1px solid var(--ink-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    /* Thin gold top bar — the first micro-detail */
+    border-top: 3px solid var(--gold);
+
+    /* Frosted-glass blur on scroll (optional) */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
-/* DELETE BUTTON */
-.delete-btn {
-    margin-top: 10px;
-    background: red;
-    color: white;
+.header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--sp-5) var(--sp-8);
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-5);
+}
+
+
+/* ── Brand ────────────────────────────────────────────── */
+.brand {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+    flex-shrink: 0;
+}
+
+.brand-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.brand-name {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--ivory);
+    letter-spacing: -0.02em;
+}
+
+.brand-tagline {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--sage);
+    display: none;
+    /* visible on wider screens */
+}
+
+@media (min-width: 640px) {
+    .brand-tagline {
+        display: inline;
+    }
+}
+
+
+/* ── Add-Book Form ────────────────────────────────────── */
+.add-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.add-form input {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    padding: var(--sp-2) var(--sp-4);
+    background: var(--ink-mid);
+    color: var(--ivory);
+    border: 1px solid var(--ink-border);
+    border-radius: var(--r-sm);
+    outline: none;
+    transition: border-color var(--t-fast), box-shadow var(--t-fast);
+    min-width: 0;
+}
+
+/* Title input stretches to fill available space */
+.add-form input[name="searchBook"] {
+    flex: 1 1 160px;
+}
+
+.add-form input[name="rating"] {
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.add-form input::placeholder {
+    color: var(--sage);
+}
+
+.add-form input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+}
+
+/* Add button */
+.btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-5);
+    background: var(--gold);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
     border: none;
-    padding: 6px;
+    border-radius: var(--r-sm);
     cursor: pointer;
+    white-space: nowrap;
+    transition: background var(--t-fast), transform var(--t-fast), box-shadow var(--t-fast);
+    flex-shrink: 0;
+}
+
+.btn-add:hover {
+    background: var(--gold-dim);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
+}
+
+.btn-add:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.btn-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+
+/* ── Sort Navigation ──────────────────────────────────── */
+.sort-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.sort-link {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ivory-dim);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    padding-bottom: 2px;
+    border-bottom: 1.5px solid transparent;
+    transition: color var(--t-fast), border-color var(--t-fast);
+}
+
+.sort-link:hover,
+.sort-link.sort-active {
+    color: var(--gold);
+    border-color: var(--gold);
+}
+
+.sort-divider {
+    color: var(--ink-border);
+    font-size: 0.8rem;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   4. SHELF GRID
+══════════════════════════════════════════════════════════════ */
+.shelf-grid {
+    max-width: 1280px;
+    width: 90%;
+    margin: var(--sp-12) auto;
+    flex: 1;
+    /* pushes footer down */
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--sp-8);
+    align-items: start;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   5. BOOK CARD
+══════════════════════════════════════════════════════════════ */
+.book-card {
+    background: var(--ink-mid);
+    border: 1px solid var(--ink-border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+
+    display: flex;
+    flex-direction: column;
+
+    /* Entrance animation state — starts invisible/shifted */
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+        opacity var(--t-slow),
+        transform var(--t-slow),
+        box-shadow var(--t-normal),
+        border-color var(--t-normal);
+}
+
+/* JS adds this class once card enters the viewport */
+.book-card.card-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Card hover — lifts off the shelf */
+.book-card:hover {
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(201, 168, 76, 0.35);
+    transform: translateY(-4px);
+}
+
+
+/* ── Cover image wrapper ──────────────────────────────── */
+.card-cover {
+    position: relative;
+    overflow: hidden;
+    background: #111420;
+    aspect-ratio: 2 / 3;
+    /* standard book proportion */
+}
+
+.card-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* no cropping — full cover visible */
+    display: block;
+    transition: transform var(--t-slow), filter var(--t-slow);
+}
+
+/* Zoom-in on cover hover */
+.book-card:hover .card-cover img {
+    transform: scale(1.04);
+    filter: brightness(0.7);
+}
+
+/* Overlay rating badge (visible on hover) */
+.cover-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--t-normal);
+}
+
+.book-card:hover .cover-overlay {
+    opacity: 1;
+}
+
+.rating-badge {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--ivory);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+    letter-spacing: -0.01em;
+}
+
+.rating-denom {
+    font-size: 0.9rem;
+    color: var(--ivory-dim);
+}
+
+
+/* ── Card body ────────────────────────────────────────── */
+.card-body {
+    padding: var(--sp-5) var(--sp-5) var(--sp-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    flex: 1;
+}
+
+.card-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ivory);
+    line-height: 1.3;
+
+    /* Clamp to 2 lines — keeps grid rows tidy */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.card-author {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--ivory-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+
+    /* Clamp to 1 line */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* ── Rating progress bar ──────────────────────────────── */
+.rating-bar {
+    height: 3px;
+    background: var(--ink-border);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.rating-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(.25, .46, .45, .94);
+}
+
+
+/* ── Shelf line (signature detail) ───────────────────── */
+.shelf-line {
+    height: 1px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            var(--gold) 30%,
+            var(--gold-dim) 70%,
+            transparent 100%);
+    opacity: 0.4;
+    margin: var(--sp-1) 0;
+    transition: opacity var(--t-normal);
+}
+
+.book-card:hover .shelf-line {
+    opacity: 0.8;
+}
+
+
+/* ── Card actions ─────────────────────────────────────── */
+.card-actions {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-delete {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ivory-dim);
+    background: transparent;
+    border: 1px solid var(--ink-border);
+    border-radius: var(--r-sm);
+    padding: var(--sp-1) var(--sp-3);
+    cursor: pointer;
+    transition:
+        color var(--t-fast),
+        border-color var(--t-fast),
+        background var(--t-fast);
+}
+
+.btn-delete:hover {
+    color: #fff;
+    background: var(--danger);
+    border-color: var(--danger);
+}
+
+.btn-delete:active {
+    background: var(--danger-dim);
+    border-color: var(--danger-dim);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   6. EMPTY STATE
+══════════════════════════════════════════════════════════════ */
+.empty-state {
+    grid-column: 1 / -1;
+    /* spans full grid width */
+    text-align: center;
+    padding: var(--sp-16) var(--sp-8);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-4);
+}
+
+.empty-icon {
+    font-size: 3.5rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.empty-heading {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--ivory);
+}
+
+.empty-sub {
+    font-size: 0.9rem;
+    color: var(--sage);
+    max-width: 320px;
+}
+
+/* Gentle floating animation for the empty-state icon */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   7. SITE FOOTER
+══════════════════════════════════════════════════════════════ */
+.site-footer {
+    border-top: 1px solid var(--ink-border);
+    padding: var(--sp-8) var(--sp-8);
+    margin-top: auto;
+}
+
+.footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+}
+
+.footer-brand {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ivory);
+    letter-spacing: -0.01em;
+}
+
+.footer-copy {
+    font-size: 0.78rem;
+    color: var(--ivory-dim);
+}
+
+.footer-stack {
+    font-size: 0.72rem;
+    color: var(--sage);
+    letter-spacing: 0.04em;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   8. RESPONSIVE BREAKPOINTS
+══════════════════════════════════════════════════════════════ */
+
+/* Tablet — single column header items stack naturally via flex-wrap */
+@media (max-width: 768px) {
+    .header-inner {
+        padding: var(--sp-4) var(--sp-5);
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .add-form {
+        width: 100%;
+    }
+
+    .sort-nav {
+        margin-left: 0;
+        justify-content: center;
+    }
+
+    .shelf-grid {
+        width: 94%;
+        gap: var(--sp-5);
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+/* Mobile — two-column grid for compact cards */
+@media (max-width: 480px) {
+    .shelf-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--sp-4);
+    }
+
+    .card-title {
+        font-size: 0.85rem;
+    }
+
+    .card-body {
+        padding: var(--sp-3);
+        gap: var(--sp-2);
+    }
 }
