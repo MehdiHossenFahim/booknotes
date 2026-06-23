@@ -12,9 +12,9 @@ const app = express();
 // =========================
 const db = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false,
-    },
+    ssl: process.env.DATABASE_URL?.includes('neon.tech') 
+        ? { rejectUnauthorized: false }
+        : false,
 });
 
 // db.connect();
