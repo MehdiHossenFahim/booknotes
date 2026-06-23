@@ -1,6 +1,8 @@
 import express from "express";
 import axios from "axios";
 import pg from "pg";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 const port = 3000;
@@ -9,11 +11,11 @@ const port = 3000;
 // DATABASE SETUP
 // =========================
 const db = new pg.Client({
-    user: "postgres",
-    host: "localhost",
-    database: "booknotes",
-    password: "Sample@123",
-    port: 5432,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
 });
 
 db.connect();
