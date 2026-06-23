@@ -110,7 +110,9 @@ app.post("/delete/:id", async (req, res) => {
 // =========================
 // START SERVER
 // =========================
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//     console.log(`Server running on http://localhost:${port}`);
+// });
+
+export default app;
 
