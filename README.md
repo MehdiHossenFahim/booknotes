@@ -189,8 +189,8 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 **Mehedi Hossen Fahim**
 
-- GitHub: [@your-username](https://github.com/MehdiHossenFahim)
-- LinkedIn: [your-linkedin](https://linkedin.com/in/mehedihossenfahim)
+- GitHub: [@MehdiHossenFahim](https://github.com/MehdiHossenFahim)
+- LinkedIn: [Mehedi hossen Fahim](https://linkedin.com/in/mehedihossenfahim)
 
 ---
 
